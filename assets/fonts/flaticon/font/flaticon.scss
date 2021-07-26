@@ -1,0 +1,41 @@
+$flaticon-font: "flaticon";
+
+@font-face {
+    font-family: $flaticon-font;
+    src: url("./flaticon.ttf?71584e704ed34fc468cd214f42a66457") format("truetype"),
+url("./flaticon.woff?71584e704ed34fc468cd214f42a66457") format("woff"),
+url("./flaticon.woff2?71584e704ed34fc468cd214f42a66457") format("woff2"),
+url("./flaticon.eot?71584e704ed34fc468cd214f42a66457#iefix") format("embedded-opentype"),
+url("./flaticon.svg?71584e704ed34fc468cd214f42a66457#flaticon") format("svg");
+}
+
+i[class^="flaticon-"]:before, i[class*=" flaticon-"]:before {
+    font-family: flaticon !important;
+    font-style: normal;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+$flaticon-map: (
+    "chicken-leg": "\f101",
+    "cherry": "\f102",
+    "fish": "\f103",
+    "orange-juice": "\f104",
+);
+
+.flaticon-chicken-leg:before {
+    content: map-get($flaticon-map, "chicken-leg");
+}
+.flaticon-cherry:before {
+    content: map-get($flaticon-map, "cherry");
+}
+.flaticon-fish:before {
+    content: map-get($flaticon-map, "fish");
+}
+.flaticon-orange-juice:before {
+    content: map-get($flaticon-map, "orange-juice");
+}
