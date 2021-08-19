@@ -1,20 +1,117 @@
+const addCart = function () {
+	$(document).on('click', '[data-theme-action=addCart]', function (e) {
+		e.stopPropagation();
+		let getQuantityCart = parseInt($('.quantityCart').text());
+		$('.quantityCart').text(getQuantityCart += 1);
+		Swal.fire({
+			title: 'Thêm giỏ hàng thành công!',
+			text: 'Thêm khoá học vào giỏ hàng thành công.',
+			icon: 'success',
+			showCancelButton: true,
+			cancelButtonColor: '#6e7d88',
+			cancelButtonText: 'Đóng popup',
+			confirmButtonColor: rootColor,
+			confirmButtonText: 'Kiểm tra giỏ hàng'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				location.href = 'index.html';
+			}
+		});
+	});
+}
+
+const removeClass = function () {
+	$(document).on('click', '[data-theme-action=removeCart]', function (e) {
+		e.stopPropagation();
+		let elm = $(this).parents('.favourite-item');
+		elm.fadeOut(300, function () {
+			elm.remove();
+		});
+		
+		Swal.fire({
+			title: 'Xoá khoá học thành công!',
+			icon: 'success',
+			showConfirmButton: false,
+			showCancelButton: true,
+			cancelButtonColor: '#6e7d88',
+			cancelButtonText: 'Đóng popup',
+		});
+	});
+}
+
+const callCart = function () {
+	function handleTouchMoveFavourite(ev) {
+		if (!$(ev.target).closest('#floatingCart').length) {
+			ev.preventDefault();
+		}
+	}
+	
+	if ($('#floatingCart').hasClass('show')) {
+		document.removeEventListener('touchmove', handleTouchMoveFavourite);
+		setTimeout(() => $('body').css('overflow', ''), 100);
+		$('#floatingCart').removeClass('show');
+	} else {
+		setTimeout(() => $('body').css('overflow', 'hidden'), 100);
+		document.addEventListener('touchmove', handleTouchMoveFavourite, {passive: false});
+		$('#floatingCart').addClass('show');
+	}
+}
+
+const callMenuMobile = function () {
+	let windowWidth = $(window).width();
+	if (windowWidth < 992) {
+		$("#header .header-bottom .header-bottom_inner .header-bottom_main .header-bottom_navigation > ul > li > ul").each(function (index) {
+			$(this).prev().attr({
+				"href": "#subMenu" + index,
+				"data-toggle": "collapse"
+			});
+			$(this).attr({
+				"id": "subMenu" + index,
+				"class": "collapse list-unstyled mb-0",
+				"data-parent": "#navigation"
+			});
+		})
+	}
+}
+
+const callMenu = function () {
+	function handleTouchMove(ev) {
+		if (!$(ev.target).closest('#header').length) {
+			ev.preventDefault();
+		}
+	}
+	
+	if ($('#header').hasClass('toggle-navigation')) {
+		document.removeEventListener('touchmove', handleTouchMove);
+		$('body').css('overflow', '');
+		$('#header').removeClass('toggle-navigation');
+	} else {
+		document.addEventListener('touchmove', handleTouchMove, {passive: false});
+		$('body').css('overflow', 'hidden');
+		$('#header').addClass('toggle-navigation');
+	}
+}
+
 $(function () {
+	callMenuMobile();
+	$(document).on("click", "#hamburger, #close-navigation, .header-overlay", function () {
+		callMenu();
+	});
+	
+	addCart();
+	removeClass();
+	
+	$(document).on('click', '[data-theme-action=callCart], [data-theme-action=closeCart]', function (e) {
+		e.stopPropagation();
+		callCart();
+	});
+	
 	if ($('.counter-value').length) {
 		$('.counter-value').counterUp({
 			delay: 10,
 			time: 1000
 		});
 	}
-	const newspaperSlide = new Swiper('#newspaper-slide', {
-		loop: true,
-		speed: 500,
-		cssMode: true,
-		autoplay: {
-			delay: 5000,
-			disableOnInteraction: false,
-		},
-		direction: "vertical",
-	});
 	
 	const bannerSlide = new Swiper('#banner-slide', {
 		loop: true,
@@ -60,6 +157,23 @@ $(function () {
 					swiper.slides[i].querySelector(".banner-item").style.transition =
 						speed + "ms";
 				}
+			}
+		}
+	});
+	
+	const newspaperSlide = new Swiper('#newspaper-slide', {
+		loop: true,
+		speed: 1000,
+		direction: "vertical",
+		slidesPerView: 5,
+		slidesPerGroup: 1,
+		breakpoints: {
+			320: {
+				autoHeight: false,
+			},
+			600: {},
+			1024: {
+				autoHeight: true,
 			}
 		}
 	});
@@ -118,4 +232,10 @@ $(function () {
 			}
 		}
 	});
-})
+	
+	$('#manage-user').on('show.bs.dropdown', function () {
+		$(this).closest('.header-top').css('z-index', 5);
+	}).on('hide.bs.dropdown', function () {
+		$(this).closest('.header-top').css('z-index', 1);
+	})
+});
