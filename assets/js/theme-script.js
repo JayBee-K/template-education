@@ -169,6 +169,10 @@ $(function () {
 		direction: "vertical",
 		slidesPerView: 5,
 		slidesPerGroup: 1,
+		autoplay: {
+			delay: 5000,
+			disableOnInteraction: false,
+		},
 		breakpoints: {
 			320: {
 				autoHeight: false,
@@ -239,5 +243,84 @@ $(function () {
 		$(this).closest('.header-top').css('z-index', 5);
 	}).on('hide.bs.dropdown', function () {
 		$(this).closest('.header-top').css('z-index', 1);
-	})
+	});
+	
+	const testSlide = new Swiper('#slide-test', {
+		loop: false,
+		speed: 1000,
+		slidesPerView: 1,
+		spaceBetween: 30,
+		allowTouchMove: false,
+		autoHeight: true,
+		navigation: {
+			// nextEl: "#swiper-next",
+			prevEl: "#swiper-prev",
+		},
+		on: {
+			slideChange() {
+				activeIndex = this.activeIndex;
+				$(this.slides[activeIndex]).addClass('swiper-active-alerted');
+			}
+		}
+	});
+	
+	
+	if ($('#swiper-next').length) {
+		$('#swiper-next').click(function (e) {
+			if ($('#slide-test .swiper-slide-active').next().hasClass('swiper-active-alerted')) {
+				testSlide.slideNext();
+			} else {
+				if ($('#slide-test .swiper-slide-active').next().length > 0) {
+					let alert = confirm("Chuyển sang câu hỏi kế!");
+					if (alert === true) {
+						testSlide.slideNext()
+					}
+				} else {
+					alert("Đã hết câu hỏi!")
+				}
+			}
+			e.stopPropagation();
+			return false;
+		});
+	}
+	
+	let windowWidth = $(window).width();
+	if (windowWidth < 768) {
+		$(window).scroll(function () {
+			let offsetTop = $('.test-main').height() - 300;
+			if ($(window).scrollTop() >= offsetTop) {
+				$('.sidebar-fixed').addClass('no-fixed');
+			} else {
+				$('.sidebar-fixed').removeClass('no-fixed');
+			}
+		})
+	}
+	
+	if ($('#setTimeTest').length) {
+		let minuteTest = $('#setTimeTest').find('[data-minutes]').attr('data-minutes'),
+			secondTest = $('#setTimeTest').find('[data-seconds]').attr('data-seconds'),
+			time = `${minuteTest}:${secondTest}`;
+		
+		var interval = setInterval(function () {
+			var timer = time.split(':');
+			var minutes = parseInt(timer[0], 10);
+			var seconds = parseInt(timer[1], 10);
+			--seconds;
+			minutes = (seconds < 0) ? --minutes : minutes;
+			seconds = (seconds < 0) ? 59 : seconds;
+			seconds = (seconds < 10) ? '0' + seconds : seconds;
+			if (minutes < 0) {
+				clearInterval(interval);
+				$('#setTimeTest').find('[data-minutes]').text('00');
+				$('#setTimeTest').find('[data-seconds]').text('00');
+				time = `00:00`;
+				// alert('Hết thời gian làm bài');
+			} else {
+				$('#setTimeTest').find('[data-minutes]').text(`${(minutes < 10) ? '0' + minutes : minutes}`);
+				$('#setTimeTest').find('[data-seconds]').text(seconds);
+				time = `${minutes}:${seconds}`;
+			}
+		}, 1000);
+		
+	}
 });
